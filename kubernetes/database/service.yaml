@@ -1,0 +1,24 @@
+# =============================================================================
+# MongoDB Service — Internal ClusterIP
+# =============================================================================
+# Exposes the MongoDB instance within the cluster. The API pods connect
+# to this service using the DNS name: mongodb-svc.three-tier.svc.cluster.local
+# =============================================================================
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-svc
+  namespace: three-tier
+  labels:
+    app.kubernetes.io/name: mongodb
+    app.kubernetes.io/component: database
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: mongodb
+  ports:
+    - port: 27017
+      targetPort: 27017
+      protocol: TCP
+      name: mongodb
