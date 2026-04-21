@@ -1,0 +1,49 @@
+# =============================================================================
+# Application Ingress — ALB-Based Traffic Routing
+# =============================================================================
+# Routes external traffic to the frontend and backend services using
+# AWS Application Load Balancer (ALB) Ingress Controller.
+#
+# Path-based routing:
+#   /api/*  →  api service   (port 8080)  — Backend REST API
+#   /*      →  web service   (port 80)    — React Frontend
+#
+# Prerequisites:
+#   1. AWS Load Balancer Controller must be installed (see infrastructure/)
+#   2. Update the 'host' field below with your actual domain name
+# =============================================================================
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: three-tier-ingress
+  namespace: three-tier
+  labels:
+    app.kubernetes.io/name: ingress
+    app.kubernetes.io/part-of: three-tier-app
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/healthcheck-path: /ok
+spec:
+  ingressClassName: alb
+  rules:
+    - host: app.example.com  # TODO: Replace with your domain
+      http:
+        paths:
+          # API tier — matches /api and all sub-paths
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: api
+                port:
+                  number: 8080
+          # Web tier — catch-all for frontend static assets
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web
+                port:
+                  number: 80
