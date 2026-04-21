@@ -1,0 +1,24 @@
+# =============================================================================
+# Web Service — Internal ClusterIP for Frontend
+# =============================================================================
+# Exposes the React frontend within the cluster on port 80.
+# The Ingress controller routes / traffic to this service.
+# =============================================================================
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  namespace: three-tier
+  labels:
+    app.kubernetes.io/name: web
+    app.kubernetes.io/component: frontend
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: web
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+      name: http

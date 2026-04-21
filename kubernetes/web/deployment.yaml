@@ -1,0 +1,61 @@
+# =============================================================================
+# Web Deployment — React Frontend Service
+# =============================================================================
+# Serves the React frontend that communicates with the API tier.
+# The REACT_APP_BACKEND_URL environment variable is baked into the
+# static bundle at build time via the Dockerfile.
+# =============================================================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  namespace: three-tier
+  labels:
+    app.kubernetes.io/name: web
+    app.kubernetes.io/component: frontend
+    app.kubernetes.io/part-of: three-tier-app
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: web
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: web
+        app.kubernetes.io/component: frontend
+    spec:
+      containers:
+        - name: web
+          image: <YOUR_ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com/three-tier-web:latest  # TODO: Replace with your ECR image URI
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          # Health probes against the Nginx static server
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            successThreshold: 1
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 150m
+              memory: 128Mi
