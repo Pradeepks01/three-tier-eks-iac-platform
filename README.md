@@ -133,7 +133,7 @@ docker push <your-ecr-repo>/three-tier-web:latest
 
 ## TODO
 
-- [ ] Replace placeholder ECR image URIs in deployment manifests
+- [x] Replace placeholder ECR image URIs in deployment manifests
 - [ ] Replace placeholder S3 bucket name in `backend.tf`
 - [ ] Replace placeholder domain in `ingress.yaml`
 - [ ] Change default MongoDB credentials in `secret.yaml`
